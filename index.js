@@ -4,8 +4,23 @@ var markov = require('./chain.js');
 var fs = require('fs');
 var iconv = require('iconv-lite');
 
-
-var data = JSON.parse(fs.readFileSync('message.json', 'utf8'));
+// Read the last datafile in the messages folder if it's not supplied in the variables
+let data = null;
+let filename = process.env.DATAFILE || null;
+if (!filename) {
+    fs.readdirSync('messages').forEach(file => {
+        const parts = file.split('.');
+        if (parts[1] === 'json') {
+            filename = file;
+        }
+    })
+}
+if (filename) {
+    data = JSON.parse(fs.readFileSync('messages/'+filename, 'utf8'));
+    console.info("Loading file "+filename);
+} else {
+    console.error("No JSON files found in the ./messages/ folder, did you create it and put in your message archive?")
+}
 
 function getMessagesFor(messages, name) {
     return messages.filter(
@@ -18,7 +33,7 @@ function getMessagesFor(messages, name) {
         )
     ).map(message => {
         const buff = new Buffer(message.content, 'utf8');
-        const content = iconv.decode(buff, 'latin1');//'ISO-8859-1');
+        const content = iconv.decode(buff, 'ISO-8859-1');
         return content
     })
 }
@@ -44,15 +59,19 @@ console.log(chains);
 
 app.get("/api/:pid", function(req, res) {
     const pid = parseInt(req.params.pid);
-    console.log("Getting result for " + chains[pid].name + "(" + req.params.pid + ")");
-    res.json({content: chains[pid].chain.generate(), trigger: false });
+    const person = chains[pid].name;
+
+    console.log("Getting result for " + person + "(" + req.params.pid + ")");
+    res.json({ content: chains[pid].chain.generate(), trigger: false, person });
 });
 
 app.get("/api/:pid/:trigger", function(req, res) {
     const pid = parseInt(req.params.pid);
+    const person = chains[pid].name;
     let trigger = req.params.trigger
+
     let content = '';
-    console.log("Getting result for " + chains[pid].name + "(" + req.params.pid + ") with trigger "+ trigger);
+    console.log("Getting result for " + person + "(" + req.params.pid + ") with trigger "+ trigger);
     try {
         content = chains[pid].chain.generate(trigger);
     } catch (e) {
@@ -60,7 +79,7 @@ app.get("/api/:pid/:trigger", function(req, res) {
         content = chains[pid].chain.generate();
         trigger = false;
     } 
-    res.json({ content, trigger });
+    res.json({ content, trigger, person });
 
 });
 

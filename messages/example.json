@@ -1,0 +1,45 @@
+{
+    "participants": [
+      {
+        "name": "Test Guy"
+      }
+    ],
+    "messages": [
+        {
+            "sender_name": "Test Guy",
+            "timestamp_ms": 1544547880464,
+            "content": "An example message - put your own message archive here to test it out",
+            "type": "Generic"
+        },
+        {
+            "sender_name": "Test Guy",
+            "timestamp_ms": 1544547880464,
+            "content": "Some more text that includes words that were in the previous message",
+            "type": "Generic"
+        },
+        {
+            "sender_name": "Test Guy",
+            "timestamp_ms": 1544547880464,
+            "content": "Example message",
+            "type": "Generic"
+        },
+        {
+            "sender_name": "Test Guy",
+            "timestamp_ms": 1544547880464,
+            "content": "This is the life",
+            "type": "Generic"
+        },
+        {
+            "sender_name": "Test Guy",
+            "timestamp_ms": 1544547880464,
+            "content": "The archive life",
+            "type": "Generic"
+        },
+        {
+            "sender_name": "Test Guy",
+            "timestamp_ms": 1544547880464,
+            "content": "The difference in messages isn't that much",
+            "type": "Generic"
+        }
+    ]
+}
