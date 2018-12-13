@@ -88,7 +88,9 @@ class Chain {
     generate(trigger) {
         let sentence = '';
         let EOL = false;
-        let currentWord = trigger || this.sol;;
+        let startWord = trigger || this.sol;;
+
+        let currentWord = startWord;
         while(!EOL) {
             let nextWord = this.getWordFromMap(currentWord, this.map[currentWord].next, this.map[currentWord].nextSum);
             currentWord = nextWord;
@@ -98,7 +100,23 @@ class Chain {
                 sentence += ' ' + currentWord;
             }
         }
-        return sentence;
+
+        sentence = sentence.trim();
+
+        let SOL = (startWord === this.sol);
+        if (!SOL) {
+            sentence = startWord + ' ' + sentence 
+        }
+        while(!SOL) {
+            let nextWord = this.getWordFromMap(currentWord, this.map[currentWord].prev, this.map[currentWord].prevSum);
+            currentWord = nextWord;
+            if (currentWord === this.sol) {
+                SOL = true;
+            } else {
+                sentence = currentWord + ' ' + sentence ;
+            }
+        }
+        return sentence.trim();
     }
 }
 
