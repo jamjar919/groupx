@@ -1,0 +1,140 @@
+body {
+    font-family: 'Helvetica', sans-serif;
+    color: #1d2129;
+    margin: 0;
+}
+
+h1 {
+    text-align: center;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 20.48px;
+    margin: auto;
+}
+
+.title {
+    display: flex;
+    height: 50px;
+    border-bottom: 1px solid rgba(0,0,0,0.1);
+    position: fixed;
+    background: #FFF;
+    top: 0;
+    width: 100%;
+}
+
+.messages {
+    /* title height */
+    margin-top: 50px;
+    /* message dialog height */
+    margin-bottom: 40px;
+    padding: 12px;
+}
+
+.messages .message-wrapper {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 15px;
+}
+
+.messages .message-wrapper .image {
+    display: flex;
+}
+
+.messages .message-wrapper .image img {
+    height: 28px;
+    width: 28px;
+    border-radius: 14px;
+    align-self: flex-end;
+}
+
+.messages .from {
+    margin-left: 12px;
+    color: rgba(0, 0, 0, .40);
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.messages .message-content {
+    margin-left: 12px;
+}
+
+.messages .message {
+    max-width: 75%;
+    border-radius: 18.2px;
+    background-color: #f1f0f0;
+    line-height: 17.92px;
+    margin-bottom: 1px;
+    padding: 6px 12px;
+}
+
+.messages .message:first {
+    border-bottom-left-radius: 4px; 
+}
+
+.messages .message:first:last {
+    border-bottom-left-radius: 18.2px; 
+}
+
+.messages .self.message-wrapper .message {
+    background-color: #0084ff;
+    color: #FFF;
+} 
+
+.messages .self.message-wrapper .message-content {
+    margin-left: auto;
+}
+
+.messages .self.message-wrapper .image {
+    display: none;
+}
+
+.messages .self.message-wrapper .from {
+    display: none;
+}
+
+.messages .announcement {
+    display: block;
+    font-weight: 500;
+    margin: 12px 0 12px 20px;
+    text-transform: uppercase;
+    text-align: center;
+    color: rgba(0, 0, 0, .40);
+    font-size: 12px;
+}
+
+.message-bar {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid rgba(0, 0, 0, .10);
+    height: 40px;
+    display: flex;
+    padding: 0 6px;
+    box-sizing: border-box;
+}
+
+.message-bar input {
+    flex: 1 1;
+    border: none;
+}
+
+.message-bar input:focus {
+    outline: none;
+}
+
+.message-bar .send {
+    height: 40px;
+    width: 40px;
+    display: flex;
+}
+
+.message-bar .send button {
+    margin: auto;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    background: #FFF;
+    border: none;
+    background-image: url('./images/send.svg');
+    background-size: 100%;
+}

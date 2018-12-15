@@ -10,13 +10,16 @@ let filename = process.env.DATAFILE || null;
 if (!filename) {
     fs.readdirSync('messages').forEach(file => {
         const parts = file.split('.');
-        if (parts[1] === 'json') {
+        if (
+            (parts[1] === 'json') &&
+            (parts.length === 2)
+        ) {
             filename = file;
         }
     })
 }
 if (filename) {
-    data = JSON.parse(fs.readFileSync('messages/'+filename, 'utf8'));
+    data = JSON.parse(fs.readFileSync('messages/'+filename, 'ascii'));
     console.info("Loading file "+filename);
 } else {
     console.error("No JSON files found in the ./messages/ folder, did you create it and put in your message archive?")
@@ -31,11 +34,7 @@ function getMessagesFor(messages, name) {
             (message.content !== "You sent a photo.") && 
             (message.content.substr(0, 4) !== "http")
         )
-    ).map(message => {
-        const buff = new Buffer(message.content, 'utf8');
-        const content = iconv.decode(buff, 'ISO-8859-1');
-        return content
-    })
+    ).map(message => message.content)
 }
 
 app.use(express.static('public'))
@@ -57,31 +56,69 @@ participants.forEach(name => {
 
 console.log(chains);
 
-app.get("/api/:pid", function(req, res) {
-    const pid = parseInt(req.params.pid);
-    const person = chains[pid].name;
-
-    console.log("Getting result for " + person + "(" + req.params.pid + ")");
-    res.json({ content: chains[pid].chain.generate(), trigger: false, person });
+app.get("/api/participants", function(req, res) {
+    res.json(
+        chains.map((c, i) => {
+            let image = false;
+            if (fs.existsSync('messages/profilepics/'+i+'.jpg')) {
+                image = '/api/profilepic/'+i+'.jpg'
+            }
+            return {
+                id: i,
+                image, 
+                name: c.name,
+                numMessages: c.chain.messageNum
+            }
+        })
+    );
 });
 
-app.get("/api/:pid/:trigger", function(req, res) {
+app.get("/api/message/:pid", function(req, res) {
     const pid = parseInt(req.params.pid);
-    const person = chains[pid].name;
+    const person = chains[pid].name;    
+    const num = Math.min(parseInt(req.query.count), 5) || 1;
+
+    const messages = [];
+    console.log("Getting " + person + "(" + req.params.pid + ") N: "+num);
+
+    for (let i = 0; i < num; i += 1) {
+        messages.push({
+            content: chains[pid].chain.generate(),
+            trigger: false,
+        })
+    }
+    res.json({ messages, person });});
+
+app.get("/api/message/:pid/:trigger", function(req, res) {
+    const pid = parseInt(req.params.pid);
+    const person = chains[pid].name;    
+    const num = parseInt(req.query.count) || 1;
     let trigger = req.params.trigger
 
-    let content = '';
-    console.log("Getting result for " + person + "(" + req.params.pid + ") with trigger "+ trigger);
-    try {
-        content = chains[pid].chain.generate(trigger);
-    } catch (e) {
-        console.log("whoops, never used that word");
-        content = chains[pid].chain.generate();
-        trigger = false;
-    } 
-    res.json({ content, trigger, person });
+    const messages = [];
+    console.log("Getting " + person + "(" + req.params.pid + ") T: "+ trigger + "  N: "+num);
+
+    for (let i = 0; i < num; i += 1) {
+        let content = '';
+        trigger = req.params.trigger
+        try {
+            content = chains[pid].chain.generate(trigger);
+        } catch (e) {
+            content = chains[pid].chain.generate();
+            trigger = false;
+        }
+        messages.push({
+            content,
+            trigger
+        })
+    }
+    res.json({ messages, person });
 
 });
+
+app.get("/api/profilepic/:pid", function(req, res) {
+    res.sendFile(parseInt(req.params.pid)+'.jpg', {root: __dirname + '/messages/profilepics'})
+})
 
 var port = process.env.PORT || 3000;
 app.listen(port, function() {
